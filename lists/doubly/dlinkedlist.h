@@ -18,7 +18,7 @@ typedef struct DLinkedList {
 
 DLinkedList* DLinkedList();
 Node* firstNode(DLinkedList *list);
-Node* lastNode(DLinkedList *list)
+Node* lastNode(DLinkedList *list);
 void insertEnd(DLinkedList *list, Node *new);
 void insertAfter(DLinkedList *list, Node *node, Node *new);
-void printList(DLinkedList *list)
+void printList(DLinkedList *list);
