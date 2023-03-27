@@ -7,14 +7,53 @@
 /**
  * Creates a new list. Remember to free() its resources when no longer needed.
  */
-DLinkedList* DLinkedList() {
+DLinkedList* newDLinkedList() {
     DLinkedList *list = (DLinkedList *) malloc(sizeof(DLinkedList));
     list->start = NULL;
     list->end = NULL;
     list->size = 0;
 
     return list;
-} 
+}
+
+
+/**
+ * Creates a new node. 
+ */
+Node* newNode(int data) {
+    Node *node = (Node *) malloc(sizeof(Node));
+    node->prev = NULL;
+    node->data = data;
+    node->next = NULL;
+
+    return node;
+}
+
+
+void freeNode(Node *node) {
+    // Free the node itself and any of its members allocated memory.
+    free(node);
+}
+
+
+/**
+ * Frees all memory dynamically allocated to the list, including its nodes. 
+ */
+void freeDLinkedList(DLinkedList *list) {
+    Node *iterator = list->start;
+    Node *next;
+
+    while (1) {
+        next = iterator->next;
+        freeNode(iterator);
+
+        if (next == NULL)
+            break;
+        iterator = next;
+    }
+    free(list);
+}
+
 
 /**
  * Adds the node to the end of the list.
