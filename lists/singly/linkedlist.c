@@ -39,6 +39,11 @@ void freeNode(Node *node) {
  * Frees all memory dynamically allocated to the list, including its nodes. 
  */
 void freeLinkedList(LinkedList *list) {
+    if (isEmpty(list)) {
+        free(list);
+        return;
+    }
+
     Node *iterator = list->start;
     Node *next;
 
@@ -97,6 +102,35 @@ void insertAfter(LinkedList *list, Node *node, Node *new) {
 
 
 /**
+ * Deletes the specified node from the list. 
+ */
+void deleteNode(LinkedList *list, Node *node) {
+    if (node == list->start) {
+        list->start = node->next;
+        node->next = NULL;
+    }
+    else {
+        Node *iterator = list->start;
+        while (iterator->next != node) {
+            if (iterator->next == NULL) {
+                list->end = iterator;
+                break;
+            }
+            iterator = iterator->next;
+        }
+
+        iterator->next = node->next;
+        node->next = NULL;
+
+        if (node == list->end)
+            list->end = iterator; 
+    }
+    freeNode(node);
+    list->size--;
+}
+
+
+/**
  * Returns a pointer to the first node (head) of the list. 
  */
 Node* firstNode(LinkedList *list) {
@@ -113,9 +147,26 @@ Node* lastNode(LinkedList *list) {
 
 
 /**
+ * Returns true (1) if the list is empty, false (0) otherwise. 
+ */
+int isEmpty(LinkedList *list) {
+    if (list->size == 0 || list->start == NULL)
+        return 1;
+    return 0;
+}
+
+
+/**
  * Prints the list.
  */
 void printList(LinkedList *list) {
+    if (isEmpty(list)) {
+        printf("----------------------\n");
+        printf("The list is empty\n");
+        printf("----------------------\n\n");
+        return;
+    }
+    
     Node *iterator = list->start;
     while (1) {
         printf("----------------------\n");
