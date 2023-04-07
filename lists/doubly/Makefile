@@ -1,8 +1,8 @@
-clean: 
-	rm -rf bin/
-
 test: test.o dlinkedlist.o
 	gcc bin/test.o bin/dlinkedlist.o -o bin/test -g
+
+clean: 
+	rm -rf bin/
 
 test.o: test.c
 	mkdir -p bin/
