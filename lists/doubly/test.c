@@ -11,6 +11,10 @@ int main(int argc, char **argv) {
 
     Node *node3 = newNode(6);
     insertAfter(list, node1, node3);
+
+    deleteNode(list, node1);
+    //deleteNode(list, node3);
+    deleteNode(list, node2);
     
     printList(list);
     freeDLinkedList(list);

@@ -5,7 +5,7 @@
 // Start of linked list methods.
 
 /**
- * Creates a new list. Remember to free() its resources when no longer needed.
+ * Creates a new list. Remember to free its resources when no longer needed.
  */
 DLinkedList* newDLinkedList() {
     DLinkedList *list = (DLinkedList *) malloc(sizeof(DLinkedList));
@@ -40,6 +40,11 @@ void freeNode(Node *node) {
  * Frees all memory dynamically allocated to the list, including its nodes. 
  */
 void freeDLinkedList(DLinkedList *list) {
+    if (isEmpty(list)) {
+        free(list);
+        return;
+    }
+
     Node *iterator = list->start;
     Node *next;
 
@@ -102,6 +107,40 @@ void insertAfter(DLinkedList *list, Node *node, Node *new) {
 
 
 /**
+ * Deletes the specified node from the list. 
+ */
+void deleteNode(DLinkedList *list, Node *node) {
+    if (node == list->start) {
+        list->start = node->next;
+        if (node->next != NULL)
+            node->next->prev = NULL;
+        node->next = NULL;
+    }
+    else {
+        Node *iterator = list->start;
+        while (iterator->next != node) {
+            if (iterator->next == NULL) {
+                list->end = iterator;
+                break;
+            }
+            iterator = iterator->next;
+        }
+
+        iterator->next = node->next;
+        if (node->next != NULL)
+            node->next->prev = iterator;
+        node->next = NULL;
+        node->prev = NULL;
+
+        if (node == list->end)
+            list->end = iterator;            
+    }
+    freeNode(node);
+    list->size--;
+}
+
+
+/**
  * Returns a pointer to the first node (head) of the list. 
  */
 Node* firstNode(DLinkedList *list) {
@@ -118,9 +157,26 @@ Node* lastNode(DLinkedList *list) {
 
 
 /**
+ * Returns true (1) if the list is empty, false (0) otherwise. 
+ */
+int isEmpty(DLinkedList *list) {
+    if (list->size == 0 || list->start == NULL)
+        return 1;
+    return 0;
+}
+
+
+/**
  * Prints the list.
  */
 void printList(DLinkedList *list) {
+    if (isEmpty(list)) {
+        printf("----------------------\n");
+        printf("The list is empty\n");
+        printf("----------------------\n\n");
+        return;
+    }
+    
     Node *iterator = list->start;
     while (1) {
         printf("----------------------\n");
