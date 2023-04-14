@@ -4,6 +4,9 @@
 #include <math.h>
 #include "hashtable.h"
 
+#define PRIME_1 211
+#define PRIME_2 163
+
 
 /**
  * Hashing function from:
@@ -19,6 +22,14 @@ int hash(const char *key, int prime, int buckets) {
         hash %= buckets;
     }
     return (int) hash;
+}
+
+
+// Handle collisions using open addressing with double hashing.
+int dubHash(const char* s, int buckets, int attempt) {
+    int a = hash(s, PRIME_1, buckets);
+    int b = hash(s, PRIME_2, buckets);
+    return (a + (attempt * (b + 1))) % buckets;
 }
 
 
@@ -61,4 +72,21 @@ void freeHashTable(HashTable *table) {
     }
     free(table->buckets);
     free(table);
+}
+
+
+void insertPair(HashTable *table, char *key, char *value) {
+    Bucket *new = newKeyValue(key, value);
+
+    int attempt = 0;
+    int index = dubHash(new->key, table->size, attempt++);
+    Bucket *cur = table->buckets[index];
+
+    // Resolve hash collisions (iterate until empty bucket found).
+    while (cur != NULL) {
+        index = dubHash(new->key, table->size, attempt++);
+        cur = table->buckets[index];
+    }
+    table->buckets[index] = new;
+    table->count++;
 }

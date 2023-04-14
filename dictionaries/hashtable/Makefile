@@ -1,12 +1,12 @@
-testhash: testhash.o hashtable.o
-	gcc bin/testhash.o bin/hashtable.o -o bin/testhash -g -lm
+test: test.o hashtable.o
+	gcc bin/test.o bin/hashtable.o -o bin/test -g -lm
 
 clean: 
 	rm -rf bin/
 
-testhash.o: testhash.c
+test.o: test.c
 	mkdir -p bin/
-	gcc testhash.c -c -o bin/testhash.o -g
+	gcc test.c -c -o bin/test.o -g
 
 hashtable.o: hashtable.c hashtable.h
 	mkdir -p bin/
