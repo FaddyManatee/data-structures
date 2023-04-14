@@ -11,30 +11,14 @@
  */
 int hash(const char *key, int prime, int buckets) {
     long hash = 0;
-    const int length = strlen(key);
-    for (int i = 0; i < length; i++) {
+    int length = strlen(key);
+
+    int i;
+    for (i = 0; i < length; i++) {
         hash += (long) pow(prime, length - (i + 1)) * key[i];
-        hash = hash % buckets;
+        hash %= buckets;
     }
     return (int) hash;
-}
-
-
-/**
- * Modified version of the PJW Hash (aka ELF Hash) to account
- * for number of buckets.
- * URL: https://en.wikipedia.org/wiki/PJW_hash_function
- */
-int m_hashpjw(const char *key, int prime, int buckets) {
-    unsigned long h = 0, high;
-    while (*key)
-    {
-        h = (h << 4) + *key++;
-        if (high = h & 0xF0000000)
-            h ^= high >> 24;
-        h &= ~high;
-    }
-    return h / buckets;
 }
 
 

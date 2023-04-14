@@ -54,7 +54,8 @@ int main(int argc, char **argv) {
 
     HashTable *table = newHashTable();
 
-    int (*func[])(const char*, int, int) = {hash, m_hashpjw};
+    // Add other hash functions here --------¬
+    int (*func[])(const char*, int, int) = {hash};
     int x, y, col = 0;
     int *hashes;
     for (x = 0; x < ARRAYSIZEM(func); x++) {
