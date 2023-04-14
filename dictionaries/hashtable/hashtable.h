@@ -14,6 +14,6 @@ typedef struct HashTable {
 HashTable* newHashTable();
 void freeHashTable();
 
-// Remove these.
+// Remove these later.
 int hash(const char *s, int prime, int buckets);
-int hashfad(char *s, int prime, int buckets);
+int m_hashpjw(const char *s, int prime, int buckets);

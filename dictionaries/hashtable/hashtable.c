@@ -21,22 +21,20 @@ int hash(const char *key, int prime, int buckets) {
 
 
 /**
- * Modified version of hashpjw() to account for number of buckets.
- * Original from Compilers - Principles, Techniques, and Tools:
- * Aho, A. Sethi, R. Ullman, J. 1986. Bell Telephone Laboratories.
+ * Modified version of the PJW Hash (aka ELF Hash) to account
+ * for number of buckets.
+ * URL: https://en.wikipedia.org/wiki/PJW_hash_function
  */
-int hashfad(char *key, int prime, int buckets) {
-    char *p;
-    unsigned int h = 0, g;
-    for (p = key; *p != '\0'; p++) {
-        h = (h << 24) + (*p);
-        if (g = h & 0xf0000000) {
-            h = h ^ (g >> 24);
-            h = h ^ g;
-        }
+int m_hashpjw(const char *key, int prime, int buckets) {
+    unsigned long h = 0, high;
+    while (*key)
+    {
+        h = (h << 4) + *key++;
+        if (high = h & 0xF0000000)
+            h ^= high >> 24;
+        h &= ~high;
     }
-    //original: return h % prime;
-    return ((h / prime) % buckets);
+    return h / buckets;
 }
 
 
@@ -60,7 +58,7 @@ Bucket* newKeyValue(const char *key, const char *value) {
 
 HashTable* newHashTable() {
     HashTable *table = (HashTable *) malloc(sizeof(HashTable));
-    table->size = 123;  // static for now.
+    table->size = 6000;  // static for now.
     table->count = 0;
     // Null entries in the array indicate that the bucket is empty.
     table->buckets = (Bucket **) calloc(table->size, sizeof(Bucket *));
