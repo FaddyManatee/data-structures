@@ -15,6 +15,18 @@ int main(int argc, char **argv) {
     push(stack, 8);
     push(stack, 9);
 
+    if (isFull(stack))
+        printf("Stack is full.\n");
+    else
+        printf("Stack is empty.\n");
+
+    // Should be 7.
+    printf("Peeking: %d\n", peek(stack));
+    printStack(stack);
+
+    pop(stack);
+
+    // Should be 6.
     printf("Peeking: %d\n", peek(stack));
     printStack(stack);
 
