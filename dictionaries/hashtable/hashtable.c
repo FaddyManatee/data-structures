@@ -7,6 +7,9 @@
 #define PRIME_1 211
 #define PRIME_2 163
 
+// Sentinel value.
+Bucket DELETED = {.key = NULL, .value = NULL};
+
 
 /**
  * Hashing function from:
@@ -54,9 +57,16 @@ Bucket* newKeyValue(const char *key, const char *value) {
 HashTable* newHashTable() {
     HashTable *table = (HashTable *) malloc(sizeof(HashTable));
     table->size = 6000;  // static for now.
-    table->count = 0;
+    table->used = 0;
     // Null entries in the array indicate that the bucket is empty.
     table->buckets = (Bucket **) calloc(table->size, sizeof(Bucket *));
+}
+
+
+void freeBucket(Bucket *bucket) {
+    free(bucket->key);
+    free(bucket->value);
+    free(bucket);
 }
 
 
@@ -65,9 +75,7 @@ void freeHashTable(HashTable *table) {
     for (x = 0; x < table->size; x++) {
         Bucket *b = table->buckets[x];
         if (b != NULL) {
-            free(b->key);
-            free(b->value);
-            free(b);
+            freeBucket(b);
         }
     }
     free(table->buckets);
@@ -75,18 +83,61 @@ void freeHashTable(HashTable *table) {
 }
 
 
-void insertPair(HashTable *table, char *key, char *value) {
-    Bucket *new = newKeyValue(key, value);
+void deletePair(HashTable *table, char *key) {
+    int attempt = 0;
+    int index = dubHash(key, table->size, attempt++);
+    Bucket *cur = table->buckets[index];
+    
+    while (cur != NULL) {
+        if (cur != &DELETED) {
+            if (strcmp(cur->key, key) == 0) {
+                freeBucket(cur);
+                table->buckets[index] = &DELETED;
+            }
+        }
+        index = dubHash(key, table->size, attempt++);
+        cur = table->buckets[index];
+    } 
+    table->used--;
+}
 
+
+void insertPair(HashTable *table, char *key, char *value) {
     int attempt = 0;
     int index = dubHash(new->key, table->size, attempt++);
     Bucket *cur = table->buckets[index];
+    Bucket *new = newKeyValue(key, value);
 
     // Resolve hash collisions (iterate until empty bucket found).
     while (cur != NULL) {
+        if (cur != &DELETED) {
+            if (strcmp(cur->key, key) == 0) {
+                deletePair(table, cur);
+                table->buckets[index] = new;
+                return;
+            }
+        }
         index = dubHash(new->key, table->size, attempt++);
         cur = table->buckets[index];
     }
     table->buckets[index] = new;
-    table->count++;
+    table->used++;
+}
+
+
+char* lookup(HashTable *table, char *key) {
+    int attempt = 0;
+    int index = dubHash(key, table->size, attempt++);
+    Bucket *cur = table->buckets[index];
+    
+    while (cur != NULL) {
+        if (cur != &DELETED) {
+            if (strcmp(cur->key, key) == 0)
+                return cur->value;
+        }
+
+        index = dubHash(key, table->size, attempt++);
+        cur = table->buckets[index];
+    } 
+    return NULL;
 }
