@@ -54,9 +54,9 @@ Bucket* newKeyValue(const char *key, const char *value) {
 }
 
 
-HashTable* newHashTable() {
+HashTable* newHashTable(int size) {
     HashTable *table = (HashTable *) malloc(sizeof(HashTable));
-    table->size = 6000;  // static for now.
+    table->size = size;  // static for now.
     table->used = 0;
     // Null entries in the array indicate that the bucket is empty.
     table->buckets = (Bucket **) calloc(table->size, sizeof(Bucket *));
@@ -64,9 +64,11 @@ HashTable* newHashTable() {
 
 
 void freeBucket(Bucket *bucket) {
-    free(bucket->key);
-    free(bucket->value);
-    free(bucket);
+    if (bucket != NULL && bucket != &DELETED) {
+        free(bucket->key);
+        free(bucket->value);
+        free(bucket);
+    }
 }
 
 
@@ -74,9 +76,8 @@ void freeHashTable(HashTable *table) {
     int x;
     for (x = 0; x < table->size; x++) {
         Bucket *b = table->buckets[x];
-        if (b != NULL) {
+        if (b != NULL)
             freeBucket(b);
-        }
     }
     free(table->buckets);
     free(table);
@@ -88,35 +89,41 @@ void deletePair(HashTable *table, char *key) {
     int index = dubHash(key, table->size, attempt++);
     Bucket *cur = table->buckets[index];
     
-    while (cur != NULL) {
+    while (cur != NULL && attempt <= table->size) {
         if (cur != &DELETED) {
             if (strcmp(cur->key, key) == 0) {
                 freeBucket(cur);
                 table->buckets[index] = &DELETED;
+                table->used--;
+                break;
             }
         }
         index = dubHash(key, table->size, attempt++);
         cur = table->buckets[index];
-    } 
-    table->used--;
+    }
 }
 
 
+// Supports updating key-value pair.
 void insertPair(HashTable *table, char *key, char *value) {
     int attempt = 0;
-    int index = dubHash(new->key, table->size, attempt++);
+    int index = dubHash(key, table->size, attempt++);
     Bucket *cur = table->buckets[index];
     Bucket *new = newKeyValue(key, value);
 
     // Resolve hash collisions (iterate until empty bucket found).
-    while (cur != NULL) {
+    while (cur != NULL && attempt <= table->size) {
         if (cur != &DELETED) {
             if (strcmp(cur->key, key) == 0) {
-                deletePair(table, cur);
+                freeBucket(cur);
                 table->buckets[index] = new;
                 return;
             }
         }
+        else if (cur == &DELETED)
+            break;
+
+        printf("DEBUG: Hash collision occurred for '%s'! Clashing key was: %d\n", key, index);
         index = dubHash(new->key, table->size, attempt++);
         cur = table->buckets[index];
     }
@@ -130,7 +137,7 @@ char* lookup(HashTable *table, char *key) {
     int index = dubHash(key, table->size, attempt++);
     Bucket *cur = table->buckets[index];
     
-    while (cur != NULL) {
+    while (cur != NULL && attempt <= table->size) {
         if (cur != &DELETED) {
             if (strcmp(cur->key, key) == 0)
                 return cur->value;
@@ -140,4 +147,23 @@ char* lookup(HashTable *table, char *key) {
         cur = table->buckets[index];
     } 
     return NULL;
+}
+
+
+void printHashTable(HashTable *table) {
+    int attempt = 0;
+    int index = 0;
+    Bucket *cur = table->buckets[index];
+
+    printf("------------------------\n");
+    while (index != table->size) {
+        if (cur != NULL && cur != &DELETED)
+            printf("%d: {%s: %s}\n", index, cur->key, cur->value);
+        else
+            printf("%d:\n", index);
+
+        index++;
+        cur = table->buckets[index];
+    }
+    printf("------------------------\n"); 
 }
