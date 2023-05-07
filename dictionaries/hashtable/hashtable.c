@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include "hashtable.h"
 
 #define PRIME_1 211
@@ -9,6 +8,24 @@
 
 // Sentinel value.
 Bucket DELETED = {.key = NULL, .value = NULL};
+
+/**
+ * Avoid including <math.h> 
+ */
+long powi(long x, unsigned n) {
+    long p = x;
+    long r = 1;
+
+    while (n > 0)
+    {
+        if (n % 2 == 1)
+            r *= p;
+        p *= p;
+        n /= 2;
+    }
+
+    return r;
+}
 
 
 /**
@@ -21,7 +38,7 @@ int hash(const char *key, int prime, int buckets) {
 
     int i;
     for (i = 0; i < length; i++) {
-        hash += (long) pow(prime, length - (i + 1)) * key[i];
+        hash += (long) powi(prime, length - (i + 1)) * key[i];
         hash %= buckets;
     }
     return (int) hash;

@@ -1,5 +1,5 @@
 test: test.o hashtable.o
-	gcc bin/test.o bin/hashtable.o -o bin/test -g -lm
+	gcc bin/test.o bin/hashtable.o -o bin/test -g
 
 clean: 
 	rm -rf bin/
