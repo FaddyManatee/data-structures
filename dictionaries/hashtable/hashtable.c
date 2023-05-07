@@ -73,7 +73,7 @@ Bucket* newKeyValue(const char *key, const char *value) {
 
 HashTable* newHashTable(int size) {
     HashTable *table = (HashTable *) malloc(sizeof(HashTable));
-    table->size = size;  // static for now.
+    table->size = size * 1.5;  // static for now, use factor to reduce collisions.
     table->used = 0;
     // Null entries in the array indicate that the bucket is empty.
     table->buckets = (Bucket **) calloc(table->size, sizeof(Bucket *));
