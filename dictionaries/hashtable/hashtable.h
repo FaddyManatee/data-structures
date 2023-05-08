@@ -11,7 +11,7 @@ typedef struct HashTable {
 } HashTable;
 
 
-HashTable* newHashTable();
+HashTable* newHashTable(int size);
 void freeHashTable(HashTable *table);
 void deletePair(HashTable *table, char *key);
 void insertPair(HashTable *table, char *key, char *value);
